@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LED Control Panel</title>
+    <link rel="stylesheet" href="style_RGB.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Форма авторизации -->
+        <div id="authContainer" class="card">
+            <div class="card-header">
+                <h2>LED Control Panel</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="username">Логин</label>
+                    <input type="text" id="username" placeholder="Введите ваш логин">
+                </div>
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password" placeholder="Введите ваш пароль">
+                </div>
+                <button id="loginButton">Войти</button>
+                <p id="errorMessage" class="error-message hidden">Неверный логин или пароль!</p>
+            </div>
+        </div>
+
+        <!-- Панель управления LED -->
+        <div id="ledControl" class="card hidden">
+            <div class="card-header">
+                <h2>Управление LED лентой</h2>
+            </div>
+            <div class="card-body">
+                <div class="welcome-message">
+                    Добро пожаловать, <span id="loggedInUser"></span>!
+                </div>
+                
+                <div class="form-group">
+                    <label for="colorPicker">Выберите цвет</label>
+                    <input type="color" id="colorPicker" value="#ff0000">
+                    <div class="color-preview" style="background-color: #ff0000;"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="modeSelect">Режим работы</label>
+                    <select id="modeSelect">
+                        <option value="color">Статический цвет</option>
+                        <option value="blink">Мигание</option>
+                        <option value="running">Бегущий огонь</option>
+                    </select>
+                </div>
+                
+                <button id="connectButton">Подключить</button>
+                <button id="sendButton" class="btn-success">Применить</button>
+                <button id="disconnectButton" class="btn-danger hidden">Отключиться</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
