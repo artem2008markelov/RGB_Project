@@ -43,29 +43,49 @@ let readingData = false;
 // Функция для чтения данных из Serial порта
 async function readSerialData() {
     try {
-        const textDecoder = new TextDecoderStream();
-        const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
-        reader = textDecoder.readable.getReader();
+        const textDecoder = new TextDecoder();
+        
+        while (readingData && port.readable) {
+            try {
+                reader = port.readable.getReader();
+                
+                try {
+                    while (readingData) {
+                        const { value, done } = await reader.read();
+                        
+                        if (done) {
+                            console.log("Stream закрыт");
+                            break;
+                        }
 
-        let inputBuffer = "";
-
-        while (readingData) {
-            const { value, done } = await reader.read();
-            if (done) break;
-
-            inputBuffer += value;
-            const lines = inputBuffer.split("\n");
-            
-            // Обрабатываем все полные строки
-            for (let i = 0; i < lines.length - 1; i++) {
-                parseAndUpdateSensorData(lines[i].trim());
+                        if (value) {
+                            const text = textDecoder.decode(value);
+                            console.log("Received:", text);
+                            
+                            // Обрабатываем полученные данные по строкам
+                            const lines = text.split('\n');
+                            for (let line of lines) {
+                                line = line.trim();
+                                if (line.length > 0) {
+                                    parseAndUpdateSensorData(line);
+                                }
+                            }
+                        }
+                    }
+                } finally {
+                    reader.releaseLock();
+                }
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    console.log("Read абортирован");
+                } else {
+                    console.error("Ошибка чтения:", error);
+                }
+                break;
             }
-            
-            // Оставляем неполную строку в буфере
-            inputBuffer = lines[lines.length - 1];
         }
     } catch (error) {
-        console.error("Ошибка чтения Serial данных:", error);
+        console.error("Ошибка в readSerialData:", error);
     }
 }
 
@@ -118,17 +138,29 @@ document.getElementById("connectButton").addEventListener("click", async () => {
         
         port = await navigator.serial.requestPort();
         await port.open({ baudRate: 115200 });
+        
         writer = port.writable.getWriter();
         
-        // Запускаем чтение данных
+        console.log("Connected successfully");
+        
+        // Запускаем чтение данных асинхронно (не ждем)
         readingData = true;
-        readSerialData();
+        readSerialData().catch(error => {
+            console.error("readSerialData error:", error);
+            readingData = false;
+        });
         
         document.getElementById("connectButton").style.display = 'none';
         document.getElementById("disconnectButton").style.display = 'inline-block';
-        alert("Успешно подключено!");
+        alert("Успешно подключено к Arduino!");
     } catch (error) {
-        alert("Ошибка подключения: " + error);
+        console.error("Connection error:", error);
+        alert("Ошибка подключения: " + error.message);
+        
+        // Очищаем переменные при ошибке
+        port = null;
+        writer = null;
+        reader = null;
     }
 });
 
@@ -137,76 +169,75 @@ document.getElementById("disconnectButton").addEventListener("click", async () =
     try {
         readingData = false;
         
+        // Даем время на завершение чтения
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         if (reader) {
-            await reader.cancel();
+            try {
+                await reader.cancel();
+            } catch (e) {
+                console.log("Reader cancel error:", e);
+            }
             reader = null;
         }
         
         if (writer) {
-            await writer.releaseLock();
+            try {
+                await writer.releaseLock();
+            } catch (e) {
+                console.log("Writer release error:", e);
+            }
             writer = null;
         }
         
         if (port) {
-            await port.close();
+            try {
+                await port.close();
+            } catch (e) {
+                console.log("Port close error:", e);
+            }
             port = null;
         }
         
         document.getElementById("connectButton").style.display = 'inline-block';
         document.getElementById("disconnectButton").style.display = 'none';
         alert("Успешно отключено!");
+        console.log("Disconnected successfully");
     } catch (error) {
+        console.error("Ошибка отключения:", error);
         alert("Ошибка отключения: " + error);
     }
 });
 
 // Отправка команды LED
-/* document.getElementById("sendButton").addEventListener("click", async () => {
+document.getElementById("sendButton").addEventListener("click", async () => {
     if (!writer) {
         alert("Сначала подключитесь к Arduino!");
         return;
     }
 
     try {
-        let color = document.getElementById("colorPicker").value.substring(1);
+        let hexColor = document.getElementById("colorPicker").value.substring(1);
         let mode = document.getElementById("modeSelect").value;
-        let r = parseInt(color.substring(0, 2), 16);
-        let g = parseInt(color.substring(2, 4), 16);
-        let b = parseInt(color.substring(4, 6), 16);
+        
+        // Парсим HEX в RGB
+        let r = parseInt(hexColor.substring(0, 2), 16);
+        let g = parseInt(hexColor.substring(2, 4), 16);
+        let b = parseInt(hexColor.substring(4, 6), 16);
 
+        // Формируем команду: mode,r,g,b
         let command = `${mode},${r},${g},${b}\n`;
+        
         console.log("SEND:", command);
-        await writer.write(
-            new TextEncoder().encode(command));
-        alert("Команда отправлена: " + command);
+        
+        // Отправляем команду
+        await writer.write(new TextEncoder().encode(command));
+        
+        console.log("Command sent successfully");
+        alert("Команда отправлена: " + command.trim());
     } catch (error) {
+        console.error("Ошибка отправки команды:", error);
         alert("Ошибка отправки команды: " + error);
-    }
-}); */
-
-document.getElementById("connectButton").addEventListener("click", async () => {
-    try {
-        if (port && port.readable) {
-            alert("Уже подключено!");
-            return;
-        }
-
-        console.log("Жду выбор порта...");
-        connectButton.addEventListener("click", async () => {
-            port = await navigator.serial.requestPort();
-        });
-        console.log("Порт выбран!");
-        await port.open({ baudRate: 115200 });
-
-        writer = port.writable.getWriter();
-
-        document.getElementById("connectButton").style.display = 'none';
-        document.getElementById("disconnectButton").style.display = 'inline-block';
-
-        alert("Успешно подключено!");
-
-    } catch (error) {
-        alert("Ошибка подключения: " + error);
     }
 });
 
@@ -215,14 +246,26 @@ window.addEventListener('beforeunload', async () => {
     readingData = false;
     
     if (reader) {
-        await reader.cancel();
+        try {
+            await reader.cancel();
+        } catch (e) {
+            console.log("Reader cancel on unload:", e);
+        }
     }
     
     if (writer) {
-        await writer.releaseLock();
+        try {
+            await writer.releaseLock();
+        } catch (e) {
+            console.log("Writer release on unload:", e);
+        }
     }
     
     if (port) {
-        await port.close();
+        try {
+            await port.close();
+        } catch (e) {
+            console.log("Port close on unload:", e);
+        }
     }
 });
