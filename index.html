@@ -29,31 +29,58 @@
         <!-- Панель управления LED -->
         <div id="ledControl" class="card hidden">
             <div class="card-header">
-                <h2>Управление LED лентой</h2>
+                <h2>Панель управления</h2>
             </div>
             <div class="card-body">
                 <div class="welcome-message">
                     Добро пожаловать, <span id="loggedInUser"></span>!
                 </div>
-                
-                <div class="form-group">
-                    <label for="colorPicker">Выберите цвет</label>
-                    <input type="color" id="colorPicker" value="#ff0000">
-                    <div class="color-preview" style="background-color: #ff0000;"></div>
+
+                <!-- Секция датчиков -->
+                <div class="sensors-section">
+                    <h3>Датчики температуры и влажности</h3>
+                    <div class="sensors-grid">
+                        <div class="sensor-card temperature-card">
+                            <div class="sensor-icon">🌡️</div>
+                            <div class="sensor-label">Температура</div>
+                            <div class="sensor-value" id="temperatureValue">--</div>
+                            <div class="sensor-unit">°C</div>
+                        </div>
+                        <div class="sensor-card humidity-card">
+                            <div class="sensor-icon">💧</div>
+                            <div class="sensor-label">Влажность</div>
+                            <div class="sensor-value" id="humidityValue">--</div>
+                            <div class="sensor-unit">%</div>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Разделитель -->
+                <div class="divider"></div>
                 
-                <div class="form-group">
-                    <label for="modeSelect">Режим работы</label>
-                    <select id="modeSelect">
-                        <option value="color">Статический цвет</option>
-                        <option value="blink">Мигание</option>
-                        <option value="running">Бегущий огонь</option>
-                    </select>
+                <!-- Секция LED управления -->
+                <div class="led-section">
+                    <h3>Управление LED лентой</h3>
+                    
+                    <div class="form-group">
+                        <label for="colorPicker">Выберите цвет</label>
+                        <input type="color" id="colorPicker" value="#ff0000">
+                        <div class="color-preview" style="background-color: #ff0000;"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="modeSelect">Режим работы</label>
+                        <select id="modeSelect">
+                            <option value="color">Статический цвет</option>
+                            <option value="blink">Мигание</option>
+                            <option value="running">Бегущий огонь</option>
+                        </select>
+                    </div>
+                    
+                    <button id="connectButton">Подключить</button>
+                    <button id="sendButton" class="btn-success">Применить</button>
+                    <button id="disconnectButton" class="btn-danger hidden">Отключиться</button>
                 </div>
-                
-                <button id="connectButton">Подключить</button>
-                <button id="sendButton" class="btn-success">Применить</button>
-                <button id="disconnectButton" class="btn-danger hidden">Отключиться</button>
             </div>
         </div>
     </div>
