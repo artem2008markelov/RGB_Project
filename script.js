@@ -117,7 +117,7 @@ document.getElementById("connectButton").addEventListener("click", async () => {
         }
         
         port = await navigator.serial.requestPort();
-        await port.open({ baudRate: 9600 });
+        await port.open({ baudRate: 115200 });
         writer = port.writable.getWriter();
         
         // Запускаем чтение данных
@@ -175,7 +175,9 @@ document.getElementById("sendButton").addEventListener("click", async () => {
         let b = parseInt(color.substring(4, 6), 16);
 
         let command = `${mode},${r},${g},${b}\n`;
-        await writer.write(new TextEncoder().encode(command));
+        console.log("SEND:", command);
+        await writer.write(
+            new TextEncoder().encode(command));
         alert("Команда отправлена: " + command);
     } catch (error) {
         alert("Ошибка отправки команды: " + error);
