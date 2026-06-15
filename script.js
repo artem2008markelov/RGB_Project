@@ -161,7 +161,7 @@ document.getElementById("disconnectButton").addEventListener("click", async () =
 });
 
 // Отправка команды LED
-document.getElementById("sendButton").addEventListener("click", async () => {
+/* document.getElementById("sendButton").addEventListener("click", async () => {
     if (!writer) {
         alert("Сначала подключитесь к Arduino!");
         return;
@@ -181,6 +181,32 @@ document.getElementById("sendButton").addEventListener("click", async () => {
         alert("Команда отправлена: " + command);
     } catch (error) {
         alert("Ошибка отправки команды: " + error);
+    }
+}); */
+
+document.getElementById("connectButton").addEventListener("click", async () => {
+    try {
+        if (port && port.readable) {
+            alert("Уже подключено!");
+            return;
+        }
+
+        console.log("Жду выбор порта...");
+        connectButton.addEventListener("click", async () => {
+            port = await navigator.serial.requestPort();
+        });
+        console.log("Порт выбран!");
+        await port.open({ baudRate: 115200 });
+
+        writer = port.writable.getWriter();
+
+        document.getElementById("connectButton").style.display = 'none';
+        document.getElementById("disconnectButton").style.display = 'inline-block';
+
+        alert("Успешно подключено!");
+
+    } catch (error) {
+        alert("Ошибка подключения: " + error);
     }
 });
 
