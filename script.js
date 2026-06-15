@@ -1,21 +1,77 @@
-// Список пользователей (логин: пароль)
-const users = {
-    "artem2008markelov@yandex.ru": "Ad345ggg",
-    "user": "123456"
-};
+// Список пользователей (загружается из JSON)
+let users = {};
 
 // Элементы DOM
 const authContainer = document.getElementById("authContainer");
 const ledControl = document.getElementById("ledControl");
 const loginButton = document.getElementById("loginButton");
+const logoutButton = document.getElementById("logoutButton");
 const errorMessage = document.getElementById("errorMessage");
 const loggedInUser = document.getElementById("loggedInUser");
 const colorPicker = document.getElementById("colorPicker");
 const colorPreview = document.querySelector(".color-preview");
+const colorHex = document.getElementById("colorHex");
+const connectionStatus = document.getElementById("connectionStatus");
+const sensorStatus = document.getElementById("sensorStatus");
+const sendButton = document.getElementById("sendButton");
+
+// Загрузить пользователей из JSON файла
+async function loadUsers() {
+    try {
+        const response = await fetch('users.json');
+        const data = await response.json();
+        
+        // Преобразуем массив пользователей в объект для быстрого поиска
+        users = {};
+        data.users.forEach(user => {
+            users[user.login] = user.password;
+        });
+        
+        console.log("Users loaded from JSON");
+    } catch (error) {
+        console.error("Error loading users:", error);
+        // Fallback на встроенные пользователи
+        users = {
+            "artem2008markelov@yandex.ru": "Ad345ggg",
+            "user": "123456"
+        };
+    }
+}
+
+// Проверить сохраненную авторизацию при загрузке
+window.addEventListener('load', async () => {
+    await loadUsers();
+    checkSavedLogin();
+});
+
+// Сохранить авторизацию в localStorage
+function saveLogin(username) {
+    localStorage.setItem('loggedInUser', username);
+}
+
+// Получить сохраненного пользователя
+function getSavedLogin() {
+    return localStorage.getItem('loggedInUser');
+}
+
+// Удалить авторизацию
+function clearLogin() {
+    localStorage.removeItem('loggedInUser');
+}
+
+// Проверить сохраненную авторизацию
+function checkSavedLogin() {
+    const savedUser = getSavedLogin();
+    if (savedUser && users[savedUser]) {
+        loginUser(savedUser);
+    }
+}
 
 // Обновление превью цвета
 colorPicker.addEventListener("input", () => {
-    colorPreview.style.backgroundColor = colorPicker.value;
+    const hexColor = colorPicker.value;
+    colorPreview.style.backgroundColor = hexColor;
+    colorHex.value = hexColor;
 });
 
 // Авторизация
@@ -24,22 +80,93 @@ loginButton.addEventListener("click", () => {
     const password = document.getElementById("password").value.trim();
 
     if (users[username] && users[username] === password) {
-        // Успешный вход
-        authContainer.classList.add("hidden");
-        ledControl.classList.remove("hidden");
-        loggedInUser.textContent = username;
-        errorMessage.classList.add("hidden");
+        loginUser(username);
     } else {
         // Ошибка авторизации
         errorMessage.classList.remove("hidden");
+        document.getElementById("password").value = "";
     }
 });
+
+// Функция для входа пользователя
+function loginUser(username) {
+    authContainer.classList.add("hidden");
+    ledControl.classList.remove("hidden");
+    loggedInUser.textContent = username;
+    errorMessage.classList.add("hidden");
+    document.getElementById("username").value = "";
+    document.getElementById("password").value = "";
+    
+    // Сохраняем авторизацию
+    saveLogin(username);
+    
+    // Инициализируем LED управление
+    updateConnectionStatus();
+    console.log("User logged in:", username);
+}
+
+// Обработчик выхода
+logoutButton.addEventListener("click", () => {
+    logoutUser();
+});
+
+function logoutUser() {
+    authContainer.classList.remove("hidden");
+    ledControl.classList.add("hidden");
+    clearLogin();
+    
+    // Отключаемся от Arduino если подключены
+    if (port) {
+        document.getElementById("disconnectButton").click();
+    }
+    
+    console.log("User logged out");
+}
 
 let port;
 let writer;
 let reader;
 let readingData = false;
 let inputBuffer = ""; // Буфер для неполных строк
+
+// Функция для переключения вкладок
+document.querySelectorAll('.tab-button').forEach(button => {
+    button.addEventListener('click', () => {
+        const tabName = button.getAttribute('data-tab');
+        
+        // Удаляем активный класс со всех кнопок и содержимого
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        // Добавляем активный класс текущим
+        button.classList.add('active');
+        document.getElementById(tabName).classList.add('active');
+    });
+});
+
+// Обновить статус соединения
+function updateConnectionStatus(isConnected = false) {
+    if (isConnected) {
+        connectionStatus.innerHTML = '<span class="status-icon">🟢</span> Подключено к Arduino';
+        sendButton.disabled = false;
+        document.getElementById("connectButton").style.display = 'none';
+        document.getElementById("disconnectButton").classList.remove('hidden');
+    } else {
+        connectionStatus.innerHTML = '<span class="status-icon">⚫</span> Не подключено';
+        sendButton.disabled = true;
+        document.getElementById("connectButton").style.display = 'inline-flex';
+        document.getElementById("disconnectButton").classList.add('hidden');
+    }
+}
+
+// Обновить статус датчика
+function updateSensorStatus(isReceiving = false) {
+    if (isReceiving) {
+        sensorStatus.innerHTML = '<span class="status-icon">🟢</span> Датчик подключен, получение данных...';
+    } else {
+        sensorStatus.innerHTML = '<span class="status-icon">⏳</span> Ожидание подключения...';
+    }
+}
 
 // Функция для чтения данных из Serial порта
 async function readSerialData() {
@@ -137,6 +264,7 @@ function updateTemperatureDisplay(temperature) {
         if (!isNaN(temperature) && temperature >= -50 && temperature <= 150) {
             tempElement.textContent = temperature.toFixed(2);
             console.log("Temperature display updated:", temperature.toFixed(2));
+            updateSensorStatus(true);
         } else {
             console.warn("Invalid temperature value:", temperature);
         }
@@ -153,6 +281,7 @@ function updateHumidityDisplay(humidity) {
         if (!isNaN(humidity) && humidity >= 0 && humidity <= 100) {
             humElement.textContent = humidity.toFixed(2);
             console.log("Humidity display updated:", humidity.toFixed(2));
+            updateSensorStatus(true);
         } else {
             console.warn("Invalid humidity value:", humidity);
         }
@@ -177,16 +306,17 @@ document.getElementById("connectButton").addEventListener("click", async () => {
         
         console.log("Connected successfully to port");
         
+        // Обновляем статус
+        updateConnectionStatus(true);
+        
         // Запускаем чтение данных асинхронно (не ждем)
         readingData = true;
         readSerialData().catch(error => {
             console.error("readSerialData error:", error);
             readingData = false;
+            updateConnectionStatus(false);
         });
         
-        document.getElementById("connectButton").style.display = 'none';
-        document.getElementById("disconnectButton").style.display = 'inline-block';
-        alert("Успешно подключено к Arduino!");
         console.log("UI updated - connected state");
     } catch (error) {
         console.error("Connection error:", error);
@@ -196,6 +326,7 @@ document.getElementById("connectButton").addEventListener("click", async () => {
         port = null;
         writer = null;
         reader = null;
+        updateConnectionStatus(false);
     }
 });
 
@@ -234,9 +365,9 @@ document.getElementById("disconnectButton").addEventListener("click", async () =
             port = null;
         }
         
-        document.getElementById("connectButton").style.display = 'inline-block';
-        document.getElementById("disconnectButton").style.display = 'none';
-        alert("Успешно отключено!");
+        updateConnectionStatus(false);
+        updateSensorStatus(false);
+        
         console.log("Disconnected successfully");
     } catch (error) {
         console.error("Ошибка отключения:", error);
@@ -248,6 +379,7 @@ document.getElementById("disconnectButton").addEventListener("click", async () =
 document.getElementById("sendButton").addEventListener("click", async () => {
     if (!writer) {
         alert("Сначала подключитесь к Arduino!");
+        updateConnectionStatus(false);
         return;
     }
 
@@ -274,10 +406,11 @@ document.getElementById("sendButton").addEventListener("click", async () => {
         await writer.write(new TextEncoder().encode(command));
         
         console.log("Command sent successfully");
-        alert("Команда отправлена: " + command.trim());
+        alert("✅ Команда отправлена: " + command.trim());
     } catch (error) {
         console.error("Ошибка отправки команды:", error);
-        alert("Ошибка отправки команды: " + error);
+        alert("❌ Ошибка отправки команды: " + error);
+        updateConnectionStatus(false);
     }
 });
 
@@ -308,4 +441,10 @@ window.addEventListener('beforeunload', async () => {
             console.log("Port close on unload:", e);
         }
     }
+});
+
+// Инициализировать статусы при загрузке
+window.addEventListener('load', () => {
+    updateConnectionStatus(false);
+    updateSensorStatus(false);
 });

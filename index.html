@@ -8,78 +8,135 @@
 </head>
 <body>
     <div class="container">
-        <div id="authContainer" class="card">
-            <div class="card-header">
-                <h2>LED Control Panel</h2>
+        <!-- Форма авторизации -->
+        <div id="authContainer" class="card auth-card">
+            <div class="card-header auth-header">
+                <div class="header-icon">🔐</div>
+                <h1>LED Control Panel</h1>
+                <p class="header-subtitle">Умная система управления LED лентой</p>
             </div>
-            <div class="card-body">
+            <div class="card-body auth-body">
                 <div class="form-group">
-                    <label for="username">Логин</label>
-                    <input type="text" id="username" placeholder="Введите ваш логин">
+                    <label for="username">
+                        <span class="label-icon">👤</span> Логин
+                    </label>
+                    <input type="text" id="username" placeholder="Введите ваш логин" autocomplete="username">
                 </div>
                 <div class="form-group">
-                    <label for="password">Пароль</label>
-                    <input type="password" id="password" placeholder="Введите ваш пароль">
+                    <label for="password">
+                        <span class="label-icon">🔑</span> Пароль
+                    </label>
+                    <input type="password" id="password" placeholder="Введите ваш пароль" autocomplete="current-password">
                 </div>
-                <button id="loginButton">Войти</button>
-                <p id="errorMessage" class="error-message hidden">Неверный логин или пароль!</p>
+                <button id="loginButton" class="btn-login">
+                    <span class="btn-icon">→</span> Войти
+                </button>
+                <p id="errorMessage" class="error-message hidden">❌ Неверный логин или пароль!</p>
             </div>
         </div>
 
-        <!-- Панель управления LED -->
-        <div id="ledControl" class="card hidden">
-            <div class="card-header">
-                <h2>Панель управления</h2>
-            </div>
-            <div class="card-body">
+        <!-- Панель управления -->
+        <div id="ledControl" class="card control-card hidden">
+            <div class="card-header control-header">
+                <div class="header-top">
+                    <h1>⚡ Панель управления</h1>
+                    <button id="logoutButton" class="btn-logout">Выход</button>
+                </div>
                 <div class="welcome-message">
-                    Добро пожаловать, <span id="loggedInUser"></span>!
+                    Добро пожаловать, <span id="loggedInUser" class="username-display"></span>! 👋
+                </div>
+            </div>
+
+            <!-- Вкладки -->
+            <div class="tabs-container">
+                <div class="tabs-header">
+                    <button class="tab-button active" data-tab="sensors">
+                        <span class="tab-icon">🌡️</span>
+                        <span class="tab-label">Параметры комнаты</span>
+                    </button>
+                    <button class="tab-button" data-tab="led-control">
+                        <span class="tab-icon">💡</span>
+                        <span class="tab-label">LED управление</span>
+                    </button>
                 </div>
 
-                <!-- Секция датчиков -->
-                <div class="sensors-section">
-                    <h3>Датчики температуры и влажности</h3>
-                    <div class="sensors-grid">
-                        <div class="sensor-card temperature-card">
-                            <div class="sensor-icon">🌡️</div>
-                            <div class="sensor-label">Температура</div>
-                            <div class="sensor-value" id="temperatureValue">--</div>
-                            <div class="sensor-unit">°C</div>
-                        </div>
-                        <div class="sensor-card humidity-card">
-                            <div class="sensor-icon">💧</div>
-                            <div class="sensor-label">Влажность</div>
-                            <div class="sensor-value" id="humidityValue">--</div>
-                            <div class="sensor-unit">%</div>
+                <div class="card-body">
+                    <!-- Вкладка: Параметры комнаты -->
+                    <div id="sensors" class="tab-content active">
+                        <div class="sensors-section">
+                            <h3>📊 Датчики температуры и влажности</h3>
+                            <div class="sensors-grid">
+                                <div class="sensor-card temperature-card">
+                                    <div class="sensor-icon">🌡️</div>
+                                    <div class="sensor-label">Температура</div>
+                                    <div class="sensor-value" id="temperatureValue">--</div>
+                                    <div class="sensor-unit">°C</div>
+                                </div>
+                                <div class="sensor-card humidity-card">
+                                    <div class="sensor-icon">💧</div>
+                                    <div class="sensor-label">Влажность</div>
+                                    <div class="sensor-value" id="humidityValue">--</div>
+                                    <div class="sensor-unit">%</div>
+                                </div>
+                            </div>
+                            <div class="sensor-status">
+                                <p id="sensorStatus" class="status-text">
+                                    <span class="status-icon">⏳</span> Ожидание подключения...
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Разделитель -->
-                <div class="divider"></div>
-                
-                <!-- Секция LED управления -->
-                <div class="led-section">
-                    <h3>Управление LED лентой</h3>
-                    
-                    <div class="form-group">
-                        <label for="colorPicker">Выберите цвет</label>
-                        <input type="color" id="colorPicker" value="#ff0000">
-                        <div class="color-preview" style="background-color: #ff0000;"></div>
+                    <!-- Вкладка: LED управление -->
+                    <div id="led-control" class="tab-content">
+                        <div class="led-section">
+                            <h3>💡 Управление LED лентой</h3>
+
+                            <!-- Выбор цвета -->
+                            <div class="form-group">
+                                <label for="colorPicker">
+                                    <span class="label-icon">🎨</span> Выберите цвет
+                                </label>
+                                <div class="color-picker-wrapper">
+                                    <input type="color" id="colorPicker" value="#ff0000" class="color-input">
+                                    <div class="color-preview" style="background-color: #ff0000;"></div>
+                                    <input type="text" id="colorHex" class="color-hex" value="#ff0000" readonly>
+                                </div>
+                            </div>
+
+                            <!-- Выбор режима -->
+                            <div class="form-group">
+                                <label for="modeSelect">
+                                    <span class="label-icon">⚙️</span> Режим работы
+                                </label>
+                                <select id="modeSelect" class="mode-select">
+                                    <option value="color">🎯 Статический цвет</option>
+                                    <option value="blink">💫 Мигание</option>
+                                    <option value="running">🔥 Бегущий огонь</option>
+                                </select>
+                            </div>
+
+                            <!-- Кнопки управления -->
+                            <div class="led-controls">
+                                <button id="connectButton" class="btn-control btn-connect">
+                                    <span class="btn-icon">🔌</span> Подключить
+                                </button>
+                                <button id="sendButton" class="btn-control btn-apply" disabled>
+                                    <span class="btn-icon">✅</span> Применить
+                                </button>
+                                <button id="disconnectButton" class="btn-control btn-disconnect hidden">
+                                    <span class="btn-icon">❌</span> Отключиться
+                                </button>
+                            </div>
+
+                            <!-- Статус соединения -->
+                            <div class="connection-status">
+                                <p id="connectionStatus" class="status-text">
+                                    <span class="status-icon">⚫</span> Не подключено
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="modeSelect">Режим работы</label>
-                        <select id="modeSelect">
-                            <option value="color">Статический цвет</option>
-                            <option value="blink">Мигание</option>
-                            <option value="running">Бегущий огонь</option>
-                        </select>
-                    </div>
-                    
-                    <button id="connectButton">Подключить</button>
-                    <button id="sendButton" class="btn-success">Применить</button>
-                    <button id="disconnectButton" class="btn-danger hidden">Отключиться</button>
                 </div>
             </div>
         </div>

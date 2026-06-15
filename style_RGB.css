@@ -1,9 +1,15 @@
 :root {
     --primary: #4361ee;
+    --primary-dark: #3a51d4;
+    --primary-light: #6c7ff0;
     --dark: #212529;
     --light: #f8f9fa;
     --danger: #ef233c;
     --success: #4cc9f0;
+    --warning: #ffa500;
+    --background: #0f0f23;
+    --surface: #1a1a3e;
+    --text: #e0e0e0;
 }
 
 * {
@@ -14,37 +20,96 @@
 }
 
 body {
-    background-color: #383b3f;
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    color: var(--dark);
+    color: var(--text);
+    background-attachment: fixed;
+    padding: 20px;
 }
 
 .container {
     width: 100%;
-    max-width: 500px;
-    padding: 2rem;
+    max-width: 900px;
+    padding: 0;
 }
 
 .card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, rgba(26, 26, 62, 0.95) 0%, rgba(70, 97, 238, 0.1) 100%);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(67, 97, 238, 0.15);
     overflow: hidden;
     transition: all 0.3s ease;
+    border: 1px solid rgba(67, 97, 238, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.auth-card {
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+.control-card {
+    max-width: 900px;
 }
 
 .card-header {
-    background: var(--primary);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
     color: white;
-    padding: 1.5rem;
+    padding: 2.5rem;
     text-align: center;
 }
 
+.auth-header {
+    padding: 3rem 2rem;
+}
+
+.header-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.card-header h1 {
+    font-size: 2.5rem;
+    margin: 0.5rem 0;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.card-header h2 {
+    font-size: 2rem;
+    margin: 0.5rem 0;
+}
+
+.header-subtitle {
+    font-size: 0.95rem;
+    opacity: 0.95;
+    margin: 0.5rem 0 0 0;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+}
+
+.control-header {
+    padding: 2rem 2.5rem;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.header-top h1 {
+    margin: 0;
+}
+
 .card-body {
-    padding: 2rem;
+    padding: 2.5rem;
+    color: var(--text);
 }
 
 .form-group {
@@ -99,10 +164,14 @@ button:hover {
 }
 
 .error-message {
-    color: var(--danger);
+    color: #ff6b6b;
     text-align: center;
     margin-top: 1rem;
     font-size: 14px;
+    padding: 1rem;
+    background: rgba(255, 107, 107, 0.1);
+    border-radius: 8px;
+    border-left: 4px solid #ff6b6b;
 }
 
 .color-preview {
@@ -209,6 +278,347 @@ button:hover {
 .led-section h3 {
     text-align: center;
     color: var(--dark);
+    margin-bottom: 1.5rem;
+    font-size: 18px;
+}
+
+/* ===== НОВЫЕ СТИЛИ ===== */
+
+/* Авторизация */
+.auth-body {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 2.5rem !important;
+}
+
+.label-icon {
+    margin-right: 0.5rem;
+    font-size: 1.1em;
+}
+
+label {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.btn-login {
+    width: 100%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1.5rem;
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-login:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
+}
+
+.btn-logout {
+    background: rgba(239, 35, 60, 0.8);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    margin-top: 0 !important;
+    width: auto;
+}
+
+.btn-logout:hover {
+    background: rgba(239, 35, 60, 1);
+}
+
+.btn-icon {
+    display: inline-block;
+    margin-right: 0.3rem;
+}
+
+/* Вкладки */
+.tabs-container {
+    width: 100%;
+}
+
+.tabs-header {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid rgba(67, 97, 238, 0.2);
+    margin-bottom: 2rem;
+}
+
+.tab-button {
+    flex: 1;
+    background: transparent;
+    color: var(--text);
+    border: none;
+    padding: 1.2rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    position: relative;
+    bottom: -2px;
+}
+
+.tab-button:hover {
+    background: rgba(67, 97, 238, 0.1);
+}
+
+.tab-button.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: rgba(67, 97, 238, 0.05);
+}
+
+.tab-icon {
+    font-size: 1.3em;
+}
+
+.tab-label {
+    display: inline;
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Форма группы */
+.form-group input,
+.form-group select {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(67, 97, 238, 0.3);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 12px 15px;
+    font-size: 1rem;
+    width: 100%;
+}
+
+.form-group input::placeholder {
+    color: rgba(224, 224, 224, 0.5);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+}
+
+/* Выбор цвета */
+.color-picker-wrapper {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.color-input {
+    width: 80px;
+    height: 50px;
+    padding: 5px;
+    border: 2px solid rgba(67, 97, 238, 0.3);
+    border-radius: 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.color-preview {
+    width: 80px;
+    height: 50px;
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.color-hex {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(67, 97, 238, 0.3) !important;
+    color: var(--primary) !important;
+    text-align: center;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+    border-radius: 8px !important;
+}
+
+/* Выбор режима */
+.mode-select {
+    width: 100% !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: var(--text) !important;
+}
+
+/* LED контролы */
+.led-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.btn-control {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0;
+}
+
+.btn-connect {
+    background: linear-gradient(135deg, var(--success) 0%, #3aa8d8 100%);
+    color: white;
+    grid-column: 1 / 2;
+}
+
+.btn-connect:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(76, 201, 240, 0.3);
+}
+
+.btn-apply {
+    background: linear-gradient(135deg, #4cc9f0 0%, #3aa8d8 100%);
+    color: white;
+    grid-column: 2 / 3;
+}
+
+.btn-apply:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(76, 201, 240, 0.3);
+}
+
+.btn-apply:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-disconnect {
+    background: linear-gradient(135deg, var(--danger) 0%, #d41f1f 100%);
+    color: white;
+    grid-column: 1 / 3;
+}
+
+.btn-disconnect:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(239, 35, 60, 0.3);
+}
+
+/* Статусы */
+.connection-status,
+.sensor-status {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: rgba(67, 97, 238, 0.1);
+    border-radius: 10px;
+    border-left: 4px solid var(--primary);
+}
+
+.status-text {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text);
+    font-weight: 500;
+}
+
+.status-icon {
+    font-size: 1.2em;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Welcome Message */
+.welcome-message {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--primary);
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.username-display {
+    color: var(--success);
+    font-weight: 700;
+}
+
+/* Датчики обновлены */
+.sensors-section h3 {
+    text-align: center;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+    font-size: 18px;
+}
+
+.sensor-label {
+    color: rgba(224, 224, 224, 0.7);
+}
+
+.sensor-value {
+    color: var(--success);
+}
+
+.temperature-card .sensor-value {
+    color: #ff6b6b;
+}
+
+.humidity-card .sensor-value {
+    color: var(--success);
+}
+
+/* LED секция */
+.led-section h3 {
+    text-align: center;
+    color: var(--text);
     margin-bottom: 1.5rem;
     font-size: 18px;
 }
