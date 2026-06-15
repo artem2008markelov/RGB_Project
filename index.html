@@ -13,25 +13,25 @@
             <div class="card-header auth-header">
                 <div class="header-icon">🔐</div>
                 <h1>LED Control Panel</h1>
-                <p class="header-subtitle">Умная система управления LED лентой</p>
+                <p class="header-subtitle">Система управления LED лентой</p>
             </div>
             <div class="card-body auth-body">
                 <div class="form-group">
                     <label for="username">
-                        <span class="label-icon">👤</span> Логин
+                        Логин
                     </label>
                     <input type="text" id="username" placeholder="Введите ваш логин" autocomplete="username">
                 </div>
                 <div class="form-group">
                     <label for="password">
-                        <span class="label-icon">🔑</span> Пароль
+                        Пароль
                     </label>
                     <input type="password" id="password" placeholder="Введите ваш пароль" autocomplete="current-password">
                 </div>
                 <button id="loginButton" class="btn-login">
-                    <span class="btn-icon">→</span> Войти
+                    Войти
                 </button>
-                <p id="errorMessage" class="error-message hidden">❌ Неверный логин или пароль!</p>
+                <p id="errorMessage" class="error-message hidden">Неверный логин или пароль!</p>
             </div>
         </div>
 
@@ -39,11 +39,11 @@
         <div id="ledControl" class="card control-card hidden">
             <div class="card-header control-header">
                 <div class="header-top">
-                    <h1>⚡ Панель управления</h1>
+                    <h1>Панель управления</h1>
                     <button id="logoutButton" class="btn-logout">Выход</button>
                 </div>
                 <div class="welcome-message">
-                    Добро пожаловать, <span id="loggedInUser" class="username-display"></span>! 👋
+                    Добро пожаловать, <span id="loggedInUser" class="username-display"></span>!
                 </div>
             </div>
 
@@ -51,11 +51,9 @@
             <div class="tabs-container">
                 <div class="tabs-header">
                     <button class="tab-button active" data-tab="sensors">
-                        <span class="tab-icon">🌡️</span>
                         <span class="tab-label">Параметры комнаты</span>
                     </button>
                     <button class="tab-button" data-tab="led-control">
-                        <span class="tab-icon">💡</span>
                         <span class="tab-label">LED управление</span>
                     </button>
                 </div>
@@ -64,7 +62,7 @@
                     <!-- Вкладка: Параметры комнаты -->
                     <div id="sensors" class="tab-content active">
                         <div class="sensors-section">
-                            <h3>📊 Датчики температуры и влажности</h3>
+                            <h3>Датчики температуры и влажности</h3>
                             <div class="sensors-grid">
                                 <div class="sensor-card temperature-card">
                                     <div class="sensor-icon">🌡️</div>
@@ -90,12 +88,12 @@
                     <!-- Вкладка: LED управление -->
                     <div id="led-control" class="tab-content">
                         <div class="led-section">
-                            <h3>💡 Управление LED лентой</h3>
+                            <h3>Управление LED лентой</h3>
 
                             <!-- Выбор цвета -->
                             <div class="form-group">
                                 <label for="colorPicker">
-                                    <span class="label-icon">🎨</span> Выберите цвет
+                                    Выберите цвет
                                 </label>
                                 <div class="color-picker-wrapper">
                                     <input type="color" id="colorPicker" value="#ff0000" class="color-input">
@@ -107,25 +105,25 @@
                             <!-- Выбор режима -->
                             <div class="form-group">
                                 <label for="modeSelect">
-                                    <span class="label-icon">⚙️</span> Режим работы
+                                    Режим работы
                                 </label>
                                 <select id="modeSelect" class="mode-select">
-                                    <option value="color">🎯 Статический цвет</option>
-                                    <option value="blink">💫 Мигание</option>
-                                    <option value="running">🔥 Бегущий огонь</option>
+                                    <option value="color">Статический цвет</option>
+                                    <option value="blink">Мигание</option>
+                                    <option value="running">Бегущий огонь</option>
                                 </select>
                             </div>
 
                             <!-- Кнопки управления -->
                             <div class="led-controls">
                                 <button id="connectButton" class="btn-control btn-connect">
-                                    <span class="btn-icon">🔌</span> Подключить
+                                    Подключить
                                 </button>
                                 <button id="sendButton" class="btn-control btn-apply" disabled>
-                                    <span class="btn-icon">✅</span> Применить
+                                    Применить
                                 </button>
                                 <button id="disconnectButton" class="btn-control btn-disconnect hidden">
-                                    <span class="btn-icon">❌</span> Отключиться
+                                    Отключиться
                                 </button>
                             </div>
 

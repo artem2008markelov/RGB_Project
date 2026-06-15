@@ -406,10 +406,10 @@ document.getElementById("sendButton").addEventListener("click", async () => {
         await writer.write(new TextEncoder().encode(command));
         
         console.log("Command sent successfully");
-        alert("✅ Команда отправлена: " + command.trim());
+        alert("Команда отправлена: " + command.trim());
     } catch (error) {
         console.error("Ошибка отправки команды:", error);
-        alert("❌ Ошибка отправки команды: " + error);
+        alert("Ошибка отправки команды: " + error);
         updateConnectionStatus(false);
     }
 });
