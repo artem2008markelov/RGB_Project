@@ -39,6 +39,7 @@ let port;
 let writer;
 let reader;
 let readingData = false;
+let inputBuffer = ""; // Буфер для неполных строк
 
 // Функция для чтения данных из Serial порта
 async function readSerialData() {
@@ -60,12 +61,20 @@ async function readSerialData() {
 
                         if (value) {
                             const text = textDecoder.decode(value);
-                            console.log("Received:", text);
+                            console.log("Raw received:", text);
                             
-                            // Обрабатываем полученные данные по строкам
-                            const lines = text.split('\n');
-                            for (let line of lines) {
-                                line = line.trim();
+                            // Добавляем новые данные в буфер
+                            inputBuffer += text;
+                            
+                            // Обрабатываем полные строки
+                            const lines = inputBuffer.split('\n');
+                            
+                            // Последняя строка может быть неполной
+                            inputBuffer = lines[lines.length - 1];
+                            
+                            // Обрабатываем все полные строки
+                            for (let i = 0; i < lines.length - 1; i++) {
+                                const line = lines[i].trim();
                                 if (line.length > 0) {
                                     parseAndUpdateSensorData(line);
                                 }
@@ -93,21 +102,29 @@ async function readSerialData() {
 function parseAndUpdateSensorData(line) {
     if (!line) return;
 
+    console.log("Parsing sensor data:", line);
+
     // Парсинг температуры
     if (line.includes("Температура:")) {
-        const match = line.match(/Температура:\s*([\d.]+)/);
+        const match = line.match(/Температура:\s*([\d.]+)\s*°?C?/);
         if (match) {
             const temperature = parseFloat(match[1]);
+            console.log("Temperature parsed:", temperature);
             updateTemperatureDisplay(temperature);
+        } else {
+            console.log("Temperature regex didn't match");
         }
     }
 
     // Парсинг влажности
     if (line.includes("Влажность:")) {
-        const match = line.match(/Влажность:\s*([\d.]+)/);
+        const match = line.match(/Влажность:\s*([\d.]+)\s*%?/);
         if (match) {
             const humidity = parseFloat(match[1]);
+            console.log("Humidity parsed:", humidity);
             updateHumidityDisplay(humidity);
+        } else {
+            console.log("Humidity regex didn't match");
         }
     }
 }
@@ -116,7 +133,15 @@ function parseAndUpdateSensorData(line) {
 function updateTemperatureDisplay(temperature) {
     const tempElement = document.getElementById("temperatureValue");
     if (tempElement) {
-        tempElement.textContent = temperature.toFixed(2);
+        // Проверяем, что значение валидно
+        if (!isNaN(temperature) && temperature >= -50 && temperature <= 150) {
+            tempElement.textContent = temperature.toFixed(2);
+            console.log("Temperature display updated:", temperature.toFixed(2));
+        } else {
+            console.warn("Invalid temperature value:", temperature);
+        }
+    } else {
+        console.warn("Temperature element not found");
     }
 }
 
@@ -124,7 +149,15 @@ function updateTemperatureDisplay(temperature) {
 function updateHumidityDisplay(humidity) {
     const humElement = document.getElementById("humidityValue");
     if (humElement) {
-        humElement.textContent = humidity.toFixed(2);
+        // Проверяем, что значение валидно (0-100%)
+        if (!isNaN(humidity) && humidity >= 0 && humidity <= 100) {
+            humElement.textContent = humidity.toFixed(2);
+            console.log("Humidity display updated:", humidity.toFixed(2));
+        } else {
+            console.warn("Invalid humidity value:", humidity);
+        }
+    } else {
+        console.warn("Humidity element not found");
     }
 }
 
@@ -140,8 +173,9 @@ document.getElementById("connectButton").addEventListener("click", async () => {
         await port.open({ baudRate: 115200 });
         
         writer = port.writable.getWriter();
+        inputBuffer = ""; // Очищаем буфер при новом подключении
         
-        console.log("Connected successfully");
+        console.log("Connected successfully to port");
         
         // Запускаем чтение данных асинхронно (не ждем)
         readingData = true;
@@ -153,6 +187,7 @@ document.getElementById("connectButton").addEventListener("click", async () => {
         document.getElementById("connectButton").style.display = 'none';
         document.getElementById("disconnectButton").style.display = 'inline-block';
         alert("Успешно подключено к Arduino!");
+        console.log("UI updated - connected state");
     } catch (error) {
         console.error("Connection error:", error);
         alert("Ошибка подключения: " + error.message);
@@ -220,10 +255,15 @@ document.getElementById("sendButton").addEventListener("click", async () => {
         let hexColor = document.getElementById("colorPicker").value.substring(1);
         let mode = document.getElementById("modeSelect").value;
         
+        console.log("Hex color:", hexColor);
+        console.log("Mode:", mode);
+        
         // Парсим HEX в RGB
         let r = parseInt(hexColor.substring(0, 2), 16);
         let g = parseInt(hexColor.substring(2, 4), 16);
         let b = parseInt(hexColor.substring(4, 6), 16);
+
+        console.log("RGB values:", r, g, b);
 
         // Формируем команду: mode,r,g,b
         let command = `${mode},${r},${g},${b}\n`;
